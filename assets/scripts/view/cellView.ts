@@ -1,13 +1,12 @@
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class CellView extends cc.Component {
-    public x: number;
-    public y: number;
+    public row: number;
+    public col: number;
 
-    init(x: number, y: number) {
-        this.x = x;
-        this.y = y;
+    init(row: number, col: number) {
+        this.row = row;
+        this.col = col;
     }
 }
-
