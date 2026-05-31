@@ -1,3 +1,4 @@
+import { gameConfig } from "../configs/gameConfig";
 import TileView, { TileColor } from "../view/tileView";
 
 const { ccclass, property } = cc._decorator;
@@ -16,40 +17,33 @@ export default class BoardController extends cc.Component {
     @property(cc.Prefab)
     tileView: cc.Prefab = null;
 
-    private _row: number = 6;
-    private _col: number = 8;
-    private _cells: CellData[][] = [];
-    private _spacing = 4;
+    private _cells: ICellData[][] = [];
 
     start() {
         this._createBoard();
     }
 
     private _createBoard() {
-        const cellSize = Math.min(
-            (this.cellContainer.width - (this._col - 1) * this._spacing) /
-                this._col,
+        const row = gameConfig.row;
+        const col = gameConfig.col;
+        const spacing = gameConfig.spacing;
 
-            (this.cellContainer.height - (this._row - 1) * this._spacing) /
-                this._row,
+        const cellSize = Math.min(
+            (this.cellContainer.width - (col - 1) * spacing) / col,
+
+            (this.cellContainer.height - (row - 1) * spacing) / row,
         );
 
-        const boardWidth =
-            this._col * cellSize + (this._col - 1) * this._spacing;
+        const boardWidth = col * cellSize + (col - 1) * spacing;
 
-        const boardHeight =
-            this._row * cellSize + (this._row - 1) * this._spacing;
+        const boardHeight = row * cellSize + (row - 1) * spacing;
 
         const startX = -boardWidth / 2 + cellSize / 2;
         const startY = boardHeight / 2 - cellSize / 2;
-        // const cellSize = Math.min(
-        //     this.cellContainer.width / this._col,
-        //     this.cellContainer.height / this._row,
-        // );
 
-        for (let r = 0; r < this._row; r++) {
+        for (let r = 0; r < row; r++) {
             this._cells[r] = [];
-            for (let c = 0; c < this._col; c++) {
+            for (let c = 0; c < col; c++) {
                 const tile = cc.instantiate(this.tileView);
                 const cell = cc.instantiate(this.cellView);
 
@@ -57,8 +51,8 @@ export default class BoardController extends cc.Component {
                 cell.height = cellSize;
                 cell.parent = this.cellContainer;
 
-                const x = startX + c * (cellSize + this._spacing);
-                const y = startY - r * (cellSize + this._spacing);
+                const x = startX + c * (cellSize + spacing);
+                const y = startY - r * (cellSize + spacing);
 
                 cell.setPosition(x, y);
 
@@ -72,6 +66,13 @@ export default class BoardController extends cc.Component {
 
                 tileView.setColor(color);
 
+                tileView.row = r;
+                tileView.col = c;
+
+                tileView.onClick = (row, col) => {
+                    this._onTileClicked(row, col);
+                };
+
                 this._cells[r][c] = {
                     row: r,
                     col: c,
@@ -81,5 +82,20 @@ export default class BoardController extends cc.Component {
                 };
             }
         }
+    }
+
+    private _onTileClicked(row: number, col: number) {
+        const tile = this._cells[row][col].tileNode;
+
+        cc.tween(tile)
+            .to(0.08, { scale: 1.2 })
+            .to(
+                0.12,
+                { scale: 1.0 },
+                {
+                    easing: "backOut",
+                },
+            )
+            .start();
     }
 }

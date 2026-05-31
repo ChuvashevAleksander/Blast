@@ -1,4 +1,4 @@
-interface CellData {
+interface ICellData {
     row: number;
     col: number;
 
