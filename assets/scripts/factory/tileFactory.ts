@@ -11,11 +11,20 @@ export default class TileFactory {
     }
 
     public createTile(): cc.Node {
+        let tile: cc.Node;
+
         if (this._pool.size() > 0) {
-            return this._pool.get();
+            tile = this._pool.get();
+        } else {
+            tile = cc.instantiate(this._prefab);
         }
 
-        return cc.instantiate(this._prefab);
+        tile.scale = 1;
+        tile.opacity = 255;
+
+        cc.Tween.stopAllByTarget(tile);
+
+        return tile;
     }
 
     public releaseTile(node: cc.Node) {

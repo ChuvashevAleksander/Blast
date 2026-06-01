@@ -18,9 +18,6 @@ export default class BoardController extends cc.Component {
     @property(cc.Prefab)
     cellView: cc.Prefab = null;
 
-    @property(cc.Prefab)
-    tileView: cc.Prefab = null;
-
     private _tileFactory: TileFactory;
     private _cells: (ICellData | null)[][] = [];
 
@@ -105,6 +102,7 @@ export default class BoardController extends cc.Component {
 
         this._removeGroup(group);
         this._collapseColumns();
+        this._spawnNewTiles();
         this._updateTilePositions();
     }
 
@@ -159,21 +157,7 @@ export default class BoardController extends cc.Component {
         group.forEach((cell) => {
             this._cells[cell.row][cell.col] = null;
 
-            cc.Tween.stopAllByTarget(cell.tileNode);
-
-            cc.tween(cell.tileNode)
-                .parallel(
-                    cc.tween().to(0.15, {
-                        scale: 0,
-                    }),
-                    cc.tween().to(0.15, {
-                        opacity: 0,
-                    }),
-                )
-                .call(() => {
-                    this._tileFactory.releaseTile(cell.tileNode);
-                })
-                .start();
+            this._tileFactory.releaseTile(cell.tileNode);
         });
     }
 
@@ -257,13 +241,54 @@ export default class BoardController extends cc.Component {
                     .to(
                         0.25,
                         {
-                            position: targetPos,
+                            x: targetPos.x,
+                            y: targetPos.y,
                         },
                         {
                             easing: "quadOut",
                         },
                     )
                     .start();
+            }
+        }
+    }
+
+    private _spawnNewTiles() {
+        for (let col = 0; col < gameConfig.col; col++) {
+            for (let row = 0; row < gameConfig.row; row++) {
+                if (this._cells[row][col]) {
+                    continue;
+                }
+
+                const tile = this._tileFactory.createTile();
+
+                const color = Math.floor(Math.random() * 5);
+
+                const tileView = tile.getComponent(TileView);
+
+                tileView.setColor(color);
+
+                tileView.row = row;
+                tileView.col = col;
+
+                tileView.onClick = (r, c) => {
+                    this._onTileClicked(r, c);
+                };
+
+                tile.parent = this.tileContainer;
+
+                const spawnPos = this._getCellPosition(-1, col);
+
+                tile.setPosition(spawnPos);
+
+                this._cells[row][col] = {
+                    row,
+                    col,
+                    color,
+
+                    cellNode: null,
+                    tileNode: tile,
+                };
             }
         }
     }

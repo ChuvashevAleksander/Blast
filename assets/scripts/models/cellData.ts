@@ -6,6 +6,6 @@ export interface ICellData {
 
     color: TileColor;
 
-    cellNode: cc.Node;
+    cellNode: cc.Node | null;
     tileNode: cc.Node;
 }
