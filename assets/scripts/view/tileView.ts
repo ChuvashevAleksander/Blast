@@ -15,6 +15,7 @@ export default class TileView extends cc.Component {
 
     public row: number = 0;
     public col: number = 0;
+    public color: TileColor = TileColor.Red;
 
     public onClick: (row: number, col: number) => void = null;
 
@@ -31,6 +32,7 @@ export default class TileView extends cc.Component {
     }
 
     public setColor(color: TileColor) {
+        this.color = color;
         this._sprite.spriteFrame = this.sprites[color];
     }
 

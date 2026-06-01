@@ -1,4 +1,5 @@
 import { gameConfig } from "../configs/gameConfig";
+import { ICellData } from "../models/cellData";
 import TileView, { TileColor } from "../view/tileView";
 
 const { ccclass, property } = cc._decorator;
@@ -17,7 +18,7 @@ export default class BoardController extends cc.Component {
     @property(cc.Prefab)
     tileView: cc.Prefab = null;
 
-    private _cells: ICellData[][] = [];
+    private _cells: (ICellData | null)[][] = [];
 
     start() {
         this._createBoard();
@@ -76,6 +77,7 @@ export default class BoardController extends cc.Component {
                 this._cells[r][c] = {
                     row: r,
                     col: c,
+                    color: color,
 
                     cellNode: cell,
                     tileNode: tile,
@@ -85,17 +87,75 @@ export default class BoardController extends cc.Component {
     }
 
     private _onTileClicked(row: number, col: number) {
-        const tile = this._cells[row][col].tileNode;
+        const group = this._findGroup(row, col);
 
-        cc.tween(tile)
-            .to(0.08, { scale: 1.2 })
-            .to(
-                0.12,
-                { scale: 1.0 },
-                {
-                    easing: "backOut",
-                },
-            )
-            .start();
+        if (group.length < 2) {
+            return;
+        }
+
+        this._removeGroup(group);
+    }
+
+    private _findGroup(row: number, col: number): ICellData[] {
+        const targetColor = this._cells[row][col].color;
+
+        const result: ICellData[] = [];
+        const visited = new Set<string>();
+
+        const dfs = (r: number, c: number) => {
+            if (r < 0 || r >= gameConfig.row || c < 0 || c >= gameConfig.col) {
+                return;
+            }
+
+            const key = `${r}_${c}`;
+
+            if (visited.has(key)) {
+                return;
+            }
+
+            const cell = this._cells[r][c];
+
+            if (!cell) {
+                return;
+            }
+
+            if (cell.color !== targetColor) {
+                return;
+            }
+
+            visited.add(key);
+            result.push(cell);
+
+            dfs(r - 1, c);
+            dfs(r + 1, c);
+            dfs(r, c - 1);
+            dfs(r, c + 1);
+        };
+
+        dfs(row, col);
+
+        return result;
+    }
+
+    private _removeGroup(group: ICellData[]) {
+        group.forEach((cell) => {
+            this._cells[cell.row][cell.col] = null;
+
+            cc.Tween.stopAllByTarget(cell.tileNode);
+
+            cc.tween(cell.tileNode)
+                .parallel(
+                    cc.tween().to(0.15, {
+                        scale: 0,
+                    }),
+                    cc.tween().to(0.15, {
+                        opacity: 0,
+                    }),
+                )
+                .call(() => {
+                    cell.tileNode.destroy();
+                })
+                .start();
+        });
     }
 }
