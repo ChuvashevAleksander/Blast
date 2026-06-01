@@ -1,4 +1,5 @@
 import { gameConfig } from "../configs/gameConfig";
+import TileFactory from "../factory/tileFactory";
 import { ICellData } from "../models/cellData";
 import TileView, { TileColor } from "../view/tileView";
 
@@ -18,6 +19,7 @@ export default class BoardController extends cc.Component {
     @property(cc.Prefab)
     tileView: cc.Prefab = null;
 
+    private _tileFactory: TileFactory;
     private _cells: (ICellData | null)[][] = [];
 
     start() {
@@ -45,8 +47,8 @@ export default class BoardController extends cc.Component {
         for (let r = 0; r < row; r++) {
             this._cells[r] = [];
             for (let c = 0; c < col; c++) {
-                const tile = cc.instantiate(this.tileView);
                 const cell = cc.instantiate(this.cellView);
+                const tile = this._tileFactory.createTile();
 
                 cell.width = cellSize;
                 cell.height = cellSize;
@@ -94,10 +96,18 @@ export default class BoardController extends cc.Component {
         }
 
         this._removeGroup(group);
+        this._collapseColumns();
+        this._updateTilePositions();
     }
 
     private _findGroup(row: number, col: number): ICellData[] {
-        const targetColor = this._cells[row][col].color;
+        const startCell = this._cells[row][col];
+
+        if (!startCell) {
+            return [];
+        }
+
+        const targetColor = startCell.color;
 
         const result: ICellData[] = [];
         const visited = new Set<string>();
@@ -153,9 +163,100 @@ export default class BoardController extends cc.Component {
                     }),
                 )
                 .call(() => {
-                    cell.tileNode.destroy();
+                    this._tileFactory.releaseTile(cell.tileNode);
                 })
                 .start();
         });
+    }
+
+    private _collapseColumns() {
+        for (let col = 0; col < gameConfig.col; col++) {
+            const tiles: ICellData[] = [];
+
+            for (let row = 0; row < gameConfig.row; row++) {
+                const cell = this._cells[row][col];
+
+                if (cell) {
+                    tiles.push(cell);
+                }
+            }
+
+            for (let row = 0; row < gameConfig.row; row++) {
+                this._cells[row][col] = null;
+            }
+
+            let targetRow = gameConfig.row - 1;
+
+            for (let i = tiles.length - 1; i >= 0; i--) {
+                const cell = tiles[i];
+
+                this._cells[targetRow][col] = cell;
+
+                cell.row = targetRow;
+                cell.col = col;
+
+                const tileView = cell.tileNode.getComponent(TileView);
+
+                tileView.row = targetRow;
+                tileView.col = col;
+
+                targetRow--;
+            }
+        }
+    }
+
+    private _getCellPosition(row: number, col: number): cc.Vec3 {
+        const spacing = gameConfig.spacing;
+
+        const cellSize = Math.min(
+            (this.cellContainer.width - (gameConfig.col - 1) * spacing) /
+                gameConfig.col,
+
+            (this.cellContainer.height - (gameConfig.row - 1) * spacing) /
+                gameConfig.row,
+        );
+
+        const boardWidth =
+            gameConfig.col * cellSize + (gameConfig.col - 1) * spacing;
+
+        const boardHeight =
+            gameConfig.row * cellSize + (gameConfig.row - 1) * spacing;
+
+        const startX = -boardWidth / 2 + cellSize / 2;
+        const startY = boardHeight / 2 - cellSize / 2;
+
+        return cc.v3(
+            startX + col * (cellSize + spacing),
+            startY - row * (cellSize + spacing),
+            0,
+        );
+    }
+
+    private _updateTilePositions() {
+        for (let row = 0; row < gameConfig.row; row++) {
+            for (let col = 0; col < gameConfig.col; col++) {
+                const cell = this._cells[row][col];
+
+                if (!cell) {
+                    continue;
+                }
+
+                const targetPos = this._getCellPosition(row, col);
+
+                cc.Tween.stopAllByTarget(cell.tileNode);
+
+                cc.tween(cell.tileNode)
+                    .to(
+                        0.25,
+                        {
+                            position: targetPos,
+                        },
+                        {
+                            easing: "quadOut",
+                        },
+                    )
+                    .start();
+            }
+        }
     }
 }

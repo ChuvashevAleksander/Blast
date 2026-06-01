@@ -142,6 +142,9 @@
     "uiBridge": {
       "__id__": 8
     },
+    "tileView": {
+      "__uuid__": "781c7b58-9f95-48ca-9b2d-ddc02f59ad88"
+    },
     "_id": "adrBfyKvpI1rOBGVDUFzmQ"
   },
   {
@@ -977,6 +980,7 @@
     "_enabled": true,
     "boardController": null,
     "uiBridge": null,
+    "tileView": null,
     "_id": "abWC3QKXxIPo6kwzK+mqR0"
   },
   {

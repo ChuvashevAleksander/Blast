@@ -1,5 +1,8 @@
+import { gameConfig } from "./configs/gameConfig";
 import BoardController from "./controllers/boardController";
 import UiBridge from "./controllers/uiBridge";
+import { DI_KEYS } from "./diKeys";
+import TileFactory from "./factory/tileFactory";
 
 const { ccclass, property } = cc._decorator;
 
@@ -14,6 +17,9 @@ export default class MainInstaller extends cc.Component {
     @property(UiBridge)
     uiBridge: UiBridge = null;
 
+    @property(cc.Prefab)
+    tileView: cc.Prefab = null;
+
     onLoad() {
         MainInstaller.instance = this;
         this.registerAll();
@@ -21,12 +27,18 @@ export default class MainInstaller extends cc.Component {
 
     private registerAll() {
         if (this.boardController) {
-            this._container.set("BoardController", this.boardController);
+            this._container.set(DI_KEYS.BoardController, this.boardController);
         }
 
         if (this.uiBridge) {
-            this._container.set("UiBridge", this.uiBridge);
+            this._container.set(DI_KEYS.UiBridge, this.uiBridge);
         }
+
+        const tileFactory = new TileFactory(
+            this.tileView,
+            gameConfig.row * gameConfig.col + 20,
+        );
+        this._container.set(DI_KEYS.TileFactory, tileFactory);
     }
 
     public resolve<T>(key: string): T {
