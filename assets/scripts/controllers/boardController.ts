@@ -1,7 +1,5 @@
 import { gameConfig } from "../configs/gameConfig";
-import { DI_KEYS } from "../diKeys";
 import TileFactory from "../factory/tileFactory";
-import MainInstaller from "../mainInstaller";
 import { ICellData } from "../models/cellData";
 import TileView from "../view/tileView";
 
@@ -21,14 +19,12 @@ export default class BoardController extends cc.Component {
     private _tileFactory: TileFactory;
     private _cells: (ICellData | null)[][] = [];
 
-    protected onLoad(): void {
-        this._tileFactory = MainInstaller.instance.resolve<TileFactory>(
-            DI_KEYS.TileFactory,
-        );
-    }
-
     start() {
         this._createBoard();
+    }
+
+    public init(tileFactory: TileFactory) {
+        this._tileFactory = tileFactory;
     }
 
     private _createBoard() {

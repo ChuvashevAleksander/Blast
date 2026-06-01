@@ -30,8 +30,8 @@ export default class MainInstaller extends cc.Component {
     }
 
     private _registerAll() {
-        if (this._boardController) {
-            this._container.set(DI_KEYS.BoardController, this._boardController);
+        if (this.boardController) {
+            this._container.set(DI_KEYS.BoardController, this.boardController);
         }
 
         if (this.uiBridge) {
@@ -43,5 +43,7 @@ export default class MainInstaller extends cc.Component {
             gameConfig.row * gameConfig.col + 20,
         );
         this._container.set(DI_KEYS.TileFactory, tileFactory);
+        console.warn(this.boardController);
+        this.boardController.init(tileFactory);
     }
 }
