@@ -22,12 +22,16 @@ export default class MainInstaller extends cc.Component {
 
     onLoad() {
         MainInstaller.instance = this;
-        this.registerAll();
+        this._registerAll();
     }
 
-    private registerAll() {
-        if (this.boardController) {
-            this._container.set(DI_KEYS.BoardController, this.boardController);
+    public resolve<T>(key: string): T {
+        return this._container.get(key) as T;
+    }
+
+    private _registerAll() {
+        if (this._boardController) {
+            this._container.set(DI_KEYS.BoardController, this._boardController);
         }
 
         if (this.uiBridge) {
@@ -39,9 +43,5 @@ export default class MainInstaller extends cc.Component {
             gameConfig.row * gameConfig.col + 20,
         );
         this._container.set(DI_KEYS.TileFactory, tileFactory);
-    }
-
-    public resolve<T>(key: string): T {
-        return this._container.get(key) as T;
     }
 }

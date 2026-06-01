@@ -3,7 +3,7 @@ import { DI_KEYS } from "../diKeys";
 import TileFactory from "../factory/tileFactory";
 import MainInstaller from "../mainInstaller";
 import { ICellData } from "../models/cellData";
-import TileView, { TileColor } from "../view/tileView";
+import TileView from "../view/tileView";
 
 const { ccclass, property } = cc._decorator;
 

@@ -136,11 +136,9 @@
       "__id__": 2
     },
     "_enabled": true,
-    "boardController": {
-      "__id__": 4
-    },
+    "boardController": null,
     "uiBridge": {
-      "__id__": 8
+      "__id__": 4
     },
     "tileView": {
       "__uuid__": "781c7b58-9f95-48ca-9b2d-ddc02f59ad88"
@@ -148,27 +146,18 @@
     "_id": "adrBfyKvpI1rOBGVDUFzmQ"
   },
   {
-    "__type__": "d0893YABkBJmKqPC/Jsw5HU",
+    "__type__": "fc9bfKdWHhMsI7sbJgO0O6A",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 5
     },
     "_enabled": true,
-    "cellContainer": {
-      "__id__": 9
-    },
-    "tileContainer": {
-      "__id__": 22
-    },
-    "cellView": {
-      "__uuid__": "e58109cc-13d3-4a02-91fc-522846c4d1c6"
-    },
-    "_id": "492k5AkG1Na4ut4KkBECK8"
+    "_id": "b9FT1a+XRHPaUdS5Fehq9y"
   },
   {
     "__type__": "cc.Node",
-    "_name": "BoardController",
+    "_name": "UiBridge",
     "_objFlags": 0,
     "_parent": {
       "__id__": 6
@@ -226,7 +215,7 @@
     "_is3DNode": false,
     "_groupIndex": 0,
     "groupIndex": 0,
-    "_id": "de3RRi5DVL/aNf74A67cAR"
+    "_id": "3dns/w/lxI14+k1veMR08w"
   },
   {
     "__type__": "cc.Node",
@@ -237,10 +226,10 @@
     },
     "_children": [
       {
-        "__id__": 5
+        "__id__": 7
       },
       {
-        "__id__": 7
+        "__id__": 5
       }
     ],
     "_active": true,
@@ -295,7 +284,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "UiBridge",
+    "_name": "BoardController",
     "_objFlags": 0,
     "_parent": {
       "__id__": 6
@@ -353,17 +342,26 @@
     "_is3DNode": false,
     "_groupIndex": 0,
     "groupIndex": 0,
-    "_id": "3dns/w/lxI14+k1veMR08w"
+    "_id": "de3RRi5DVL/aNf74A67cAR"
   },
   {
-    "__type__": "fc9bfKdWHhMsI7sbJgO0O6A",
+    "__type__": "d0893YABkBJmKqPC/Jsw5HU",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 7
     },
     "_enabled": true,
-    "_id": "b9FT1a+XRHPaUdS5Fehq9y"
+    "cellContainer": {
+      "__id__": 9
+    },
+    "tileContainer": {
+      "__id__": 22
+    },
+    "cellView": {
+      "__uuid__": "e58109cc-13d3-4a02-91fc-522846c4d1c6"
+    },
+    "_id": "a04GHTS+RO+Kft02eluTXm"
   },
   {
     "__type__": "cc.Node",
