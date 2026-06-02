@@ -1,6 +1,4 @@
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class UiBridge extends cc.Component {
-
-}
+export default class UiBridge extends cc.Component {}
