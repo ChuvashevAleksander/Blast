@@ -18,8 +18,14 @@ export default class BoardController extends cc.Component {
 
     private _tileFactory: TileFactory;
     private _cells: (ICellData | null)[][] = [];
+    private _spacing: number = 0;
+    private _cellSize: number = 0;
+    private _startX: number = 0;
+    private _startY: number = 0;
+    private _isUpdating: boolean = false;
 
     start() {
+        this._spacing = gameConfig.spacing;
         this._createBoard();
     }
 
@@ -30,20 +36,17 @@ export default class BoardController extends cc.Component {
     private _createBoard() {
         const row = gameConfig.row;
         const col = gameConfig.col;
-        const spacing = gameConfig.spacing;
 
-        const cellSize = Math.min(
-            (this.cellContainer.width - (col - 1) * spacing) / col,
-
-            (this.cellContainer.height - (row - 1) * spacing) / row,
+        this._cellSize = Math.min(
+            (this.cellContainer.width - (col - 1) * this._spacing) / col,
+            (this.cellContainer.height - (row - 1) * this._spacing) / row,
         );
 
-        const boardWidth = col * cellSize + (col - 1) * spacing;
+        const boardWidth = col * this._cellSize + (col - 1) * this._spacing;
+        const boardHeight = row * this._cellSize + (row - 1) * this._spacing;
 
-        const boardHeight = row * cellSize + (row - 1) * spacing;
-
-        const startX = -boardWidth / 2 + cellSize / 2;
-        const startY = boardHeight / 2 - cellSize / 2;
+        this._startX = -boardWidth / 2 + this._cellSize / 2;
+        this._startY = boardHeight / 2 - this._cellSize / 2;
 
         for (let r = 0; r < row; r++) {
             this._cells[r] = [];
@@ -51,19 +54,19 @@ export default class BoardController extends cc.Component {
                 const cell = cc.instantiate(this.cellView);
                 const tile = this._tileFactory.createTile();
 
-                cell.width = cellSize;
-                cell.height = cellSize;
+                cell.width = this._cellSize;
+                cell.height = this._cellSize;
                 cell.parent = this.cellContainer;
 
-                const x = startX + c * (cellSize + spacing);
-                const y = startY - r * (cellSize + spacing);
+                const x = this._startX + c * (this._cellSize + this._spacing);
+                const y = this._startY - r * (this._cellSize + this._spacing);
 
                 cell.setPosition(x, y);
 
                 tile.parent = this.tileContainer;
                 tile.setPosition(x, y);
-                tile.width = cellSize;
-                tile.height = cellSize;
+                tile.width = this._cellSize;
+                tile.height = this._cellSize;
 
                 const tileView = tile.getComponent(TileView);
                 const color = Math.floor(Math.random() * 5);
@@ -90,16 +93,23 @@ export default class BoardController extends cc.Component {
     }
 
     private _onTileClicked(row: number, col: number) {
+        if (this._isUpdating) return;
         const group = this._findGroup(row, col);
 
         if (group.length < 2) {
             return;
         }
 
+        this._isUpdating = true;
+
         this._removeGroup(group);
         this._collapseColumns();
         this._spawnNewTiles();
         this._updateTilePositions();
+
+        this.scheduleOnce(() => {
+            this._isUpdating = false;
+        }, 0.3);
     }
 
     private _findGroup(row: number, col: number): ICellData[] {
@@ -194,28 +204,9 @@ export default class BoardController extends cc.Component {
     }
 
     private _getCellPosition(row: number, col: number): cc.Vec3 {
-        const spacing = gameConfig.spacing;
-
-        const cellSize = Math.min(
-            (this.cellContainer.width - (gameConfig.col - 1) * spacing) /
-                gameConfig.col,
-
-            (this.cellContainer.height - (gameConfig.row - 1) * spacing) /
-                gameConfig.row,
-        );
-
-        const boardWidth =
-            gameConfig.col * cellSize + (gameConfig.col - 1) * spacing;
-
-        const boardHeight =
-            gameConfig.row * cellSize + (gameConfig.row - 1) * spacing;
-
-        const startX = -boardWidth / 2 + cellSize / 2;
-        const startY = boardHeight / 2 - cellSize / 2;
-
         return cc.v3(
-            startX + col * (cellSize + spacing),
-            startY - row * (cellSize + spacing),
+            this._startX + col * (this._cellSize + this._spacing),
+            this._startY - row * (this._cellSize + this._spacing),
             0,
         );
     }
