@@ -1,7 +1,8 @@
-import { gameConfig } from "../configs/gameConfig";
+import { gameConfig, ruleConfig } from "../configs/gameConfig";
 import TileFactory from "../factory/tileFactory";
 import { ICellData } from "../models/cellData";
 import TileView from "../view/tileView";
+import ScoreController from "./scoreController";
 
 const { ccclass, property } = cc._decorator;
 
@@ -17,6 +18,8 @@ export default class BoardController extends cc.Component {
     cellView: cc.Prefab = null;
 
     private _tileFactory: TileFactory;
+    private _scoreController: ScoreController;
+
     private _cells: (ICellData | null)[][] = [];
     private _spacing: number = 0;
     private _cellSize: number = 0;
@@ -29,8 +32,9 @@ export default class BoardController extends cc.Component {
         this._createBoard();
     }
 
-    public init(tileFactory: TileFactory) {
+    public init(tileFactory: TileFactory, scoreController: ScoreController) {
         this._tileFactory = tileFactory;
+        this._scoreController = scoreController;
     }
 
     private _createBoard() {
@@ -99,6 +103,10 @@ export default class BoardController extends cc.Component {
         if (group.length < 2) {
             return;
         }
+
+        const scoreCount: number = group.length * ruleConfig.scoreForTile;
+        this._scoreController.addScore(scoreCount);
+        this._scoreController.reduceRemainderMoves();
 
         this._isUpdating = true;
 

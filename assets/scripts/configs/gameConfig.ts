@@ -7,3 +7,13 @@ export const gameConfig = {
     col,
     spacing,
 };
+
+const scoreForTile: number = 5;
+const numbersOfMoves: number = 10;
+const winScore: number = 200;
+
+export const ruleConfig = {
+    scoreForTile,
+    numbersOfMoves,
+    winScore,
+};
