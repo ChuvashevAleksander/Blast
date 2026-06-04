@@ -10,24 +10,24 @@ export default class ScoreController extends cc.Component {
     @property(cc.Label)
     moveLabel: cc.Label = null;
 
-    private _currentScore: number = 0;
-    private _currentRemainderMoves: number = 0;
+    public currentScore: number = 0;
+    public currentRemainderMoves: number = 0;
 
     protected onLoad(): void {
-        this._currentRemainderMoves = ruleConfig.numbersOfMoves;
-        this.moveLabel.string = this._currentRemainderMoves.toFixed();
-        this.addScore(this._currentScore);
+        this.currentRemainderMoves = ruleConfig.numbersOfMoves;
+        this.moveLabel.string = this.currentRemainderMoves.toFixed();
+        this.addScore(this.currentScore);
     }
 
     public addScore(score: number) {
-        this._currentScore += score;
+        this.currentScore += score;
         const updatedLabel: string =
-            this._currentScore + "/" + ruleConfig.winScore;
+            this.currentScore + "/" + ruleConfig.winScore;
         this.scoreLabel.string = updatedLabel;
     }
 
     public reduceRemainderMoves() {
-        this._currentRemainderMoves--;
-        this.moveLabel.string = this._currentRemainderMoves.toFixed();
+        this.currentRemainderMoves--;
+        this.moveLabel.string = this.currentRemainderMoves.toFixed();
     }
 }

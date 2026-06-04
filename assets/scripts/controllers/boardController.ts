@@ -2,6 +2,7 @@ import { gameConfig, ruleConfig } from "../configs/gameConfig";
 import TileFactory from "../factory/tileFactory";
 import { ICellData } from "../models/cellData";
 import TileView from "../view/tileView";
+import GameResultController from "./gameResultController";
 import ScoreController from "./scoreController";
 
 const { ccclass, property } = cc._decorator;
@@ -19,6 +20,7 @@ export default class BoardController extends cc.Component {
 
     private _tileFactory: TileFactory;
     private _scoreController: ScoreController;
+    private _gameResultController: GameResultController;
 
     private _cells: (ICellData | null)[][] = [];
     private _spacing: number = 0;
@@ -32,9 +34,14 @@ export default class BoardController extends cc.Component {
         this._createBoard();
     }
 
-    public init(tileFactory: TileFactory, scoreController: ScoreController) {
+    public init(
+        tileFactory: TileFactory,
+        scoreController: ScoreController,
+        gameResultController: GameResultController,
+    ) {
         this._tileFactory = tileFactory;
         this._scoreController = scoreController;
+        this._gameResultController = gameResultController;
     }
 
     private _createBoard() {
@@ -114,6 +121,8 @@ export default class BoardController extends cc.Component {
         this._collapseColumns();
         this._spawnNewTiles();
         this._updateTilePositions();
+
+        this._gameResultController.checkGameOver();
 
         this.scheduleOnce(() => {
             this._isUpdating = false;
