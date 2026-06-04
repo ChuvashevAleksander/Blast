@@ -29,4 +29,9 @@ export default class UiBridge extends cc.Component {
             .start();
         this.overlay.node.opacity = 255 * 0.8;
     }
+
+    public closeAndClearOverlay() {
+        this.overlay.node.active = false;
+        this.messageLabel.string = "";
+    }
 }

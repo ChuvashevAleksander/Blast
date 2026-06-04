@@ -44,6 +44,44 @@ export default class BoardController extends cc.Component {
         this._gameResultController = gameResultController;
     }
 
+    public hasAnyValidMove(): boolean {
+        for (let row = 0; row < gameConfig.row; row++) {
+            for (let col = 0; col < gameConfig.col; col++) {
+                const cell = this._cells[row][col];
+                if (cell !== null) {
+                    const group = this._findGroup(row, col);
+                    if (group.length >= 2) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public resetBoard() {
+        for (let row = 0; row < gameConfig.row; row++) {
+            for (let col = 0; col < gameConfig.col; col++) {
+                const cell = this._cells[row]?.[col];
+                if (cell?.tileNode) {
+                    cc.Tween.stopAllByTarget(cell.tileNode);
+                    this._tileFactory.releaseTile(cell.tileNode);
+                }
+                if (cell?.cellNode) {
+                    cell.cellNode.destroy();
+                }
+            }
+        }
+
+        this.cellContainer.removeAllChildren();
+        this.tileContainer.removeAllChildren();
+
+        this._cells = [];
+        this._isUpdating = false;
+
+        this._createBoard();
+    }
+
     private _createBoard() {
         const row = gameConfig.row;
         const col = gameConfig.col;
@@ -123,6 +161,9 @@ export default class BoardController extends cc.Component {
         this._updateTilePositions();
 
         this._gameResultController.checkGameOver();
+        if (!this.hasAnyValidMove()) {
+            this._gameResultController.setLose();
+        }
 
         this.scheduleOnce(() => {
             this._isUpdating = false;

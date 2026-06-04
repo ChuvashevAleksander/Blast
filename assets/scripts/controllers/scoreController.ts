@@ -14,9 +14,7 @@ export default class ScoreController extends cc.Component {
     public currentRemainderMoves: number = 0;
 
     protected onLoad(): void {
-        this.currentRemainderMoves = ruleConfig.numbersOfMoves;
-        this.moveLabel.string = this.currentRemainderMoves.toFixed();
-        this.addScore(this.currentScore);
+        this.resetGame();
     }
 
     public addScore(score: number) {
@@ -29,5 +27,11 @@ export default class ScoreController extends cc.Component {
     public reduceRemainderMoves() {
         this.currentRemainderMoves--;
         this.moveLabel.string = this.currentRemainderMoves.toFixed();
+    }
+
+    public resetGame() {
+        this.currentRemainderMoves = ruleConfig.numbersOfMoves;
+        this.moveLabel.string = this.currentRemainderMoves.toFixed();
+        this.addScore(this.currentScore);
     }
 }

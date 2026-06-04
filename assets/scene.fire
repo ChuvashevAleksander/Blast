@@ -378,7 +378,9 @@
     "overlay": {
       "__id__": 9
     },
-    "label": null,
+    "messageLabel": {
+      "__id__": 40
+    },
     "_id": "b9FT1a+XRHPaUdS5Fehq9y"
   },
   {
@@ -1778,7 +1780,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "label",
+    "_name": "messageLabel",
     "_objFlags": 0,
     "_parent": {
       "__id__": 10

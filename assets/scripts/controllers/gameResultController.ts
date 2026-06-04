@@ -16,12 +16,24 @@ export default class GameResultController extends cc.Component {
     }
 
     public checkGameOver() {
-        console.warn(this._scoreController.currentScore);
-        console.warn(this._scoreController.currentRemainderMoves);
         if (this._scoreController.currentScore >= ruleConfig.winScore) {
             this._uiBridge.showWinLabel();
+            this._restartGame();
         } else if (this._scoreController.currentRemainderMoves <= 0) {
             this._uiBridge.showLoseLabel();
+            this._restartGame();
         }
+    }
+
+    public setLose() {
+        this._uiBridge.showLoseLabel();
+        this._restartGame();
+    }
+
+    private _restartGame() {
+        cc.tween(this)
+            .delay(5)
+            .call(() => cc.director.loadScene(cc.director.getScene().name))
+            .start();
     }
 }
