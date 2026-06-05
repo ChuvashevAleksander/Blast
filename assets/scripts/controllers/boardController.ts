@@ -155,19 +155,19 @@ export default class BoardController extends cc.Component {
 
         this._isUpdating = true;
 
-        this._removeGroup(group);
-        this._collapseColumns();
-        this._spawnNewTiles();
-        this._updateTilePositions();
+        this._removeGroup(group, () => {
+            this._collapseColumns();
+            this._spawnNewTiles();
+            this._updateTilePositions();
+            this._gameResultController.checkGameOver();
+            if (!this.hasAnyValidMove()) {
+                this._gameResultController.setLose();
+            }
 
-        this._gameResultController.checkGameOver();
-        if (!this.hasAnyValidMove()) {
-            this._gameResultController.setLose();
-        }
-
-        this.scheduleOnce(() => {
-            this._isUpdating = false;
-        }, 0.3);
+            this.scheduleOnce(() => {
+                this._isUpdating = false;
+            }, 0.3);
+        });
     }
 
     private _findGroup(row: number, col: number): ICellData[] {
@@ -217,11 +217,39 @@ export default class BoardController extends cc.Component {
         return result;
     }
 
-    private _removeGroup(group: ICellData[]) {
-        group.forEach((cell) => {
-            this._cells[cell.row][cell.col] = null;
+    private _removeGroup(group: ICellData[], onComplete: () => void) {
+        if (group.length === 0) {
+            onComplete?.();
+            return;
+        }
 
-            this._tileFactory.releaseTile(cell.tileNode);
+        let completed = 0;
+        const total = group.length;
+
+        group.forEach((cell) => {
+            const tileNode = cell.tileNode;
+            if (!tileNode || !tileNode.isValid) {
+                completed++;
+                if (completed === total) onComplete?.();
+                return;
+            }
+
+            cc.Tween.stopAllByTarget(tileNode);
+
+            const originalScale = tileNode.scale;
+            cc.tween(tileNode)
+                .to(
+                    0.15,
+                    { scale: originalScale * 0.2, opacity: 0 },
+                    { easing: "backIn" },
+                )
+                .call(() => {
+                    this._cells[cell.row][cell.col] = null;
+                    this._tileFactory.releaseTile(tileNode);
+                    completed++;
+                    if (completed === total) onComplete?.();
+                })
+                .start();
         });
     }
 

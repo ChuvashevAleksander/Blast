@@ -9,7 +9,7 @@
     "portrait": false,
     "upsideDown": false
   },
-  "webOrientation": "portrait",
+  "webOrientation": "auto",
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
   "mainCompressionType": "default",
